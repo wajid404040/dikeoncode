@@ -1,0 +1,98 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  surname        String
+  email          String   @unique
+  password       String
+  picture        String?
+  selectedAvatar String?
+  selectedVoice  String?
+  voiceSettings  Json?    // Store voice settings as JSON
+  status         UserStatus @default(WAITLIST)  // WAITLIST, APPROVED, REJECTED
+  approvedAt     DateTime?
+  approvedBy     String?  // Admin ID who approved
+  isOnline       Boolean  @default(false)
+  lastSeen       DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Friend relationships
+  sentFriendRequests     FriendRequest[] @relation("SentFriendRequests")
+  receivedFriendRequests FriendRequest[] @relation("ReceivedFriendRequests")
+  
+  // Chat messages
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+  
+  // Emotion alerts
+  sentAlerts      EmotionAlert[] @relation("SentAlerts")
+  receivedAlerts  EmotionAlert[] @relation("ReceivedAlerts")
+
+  @@map("users")
+}
+
+model FriendRequest {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  fromUser  User     @relation("SentFriendRequests", fields: [fromUserId], references: [id])
+  fromUserId String  @db.ObjectId
+  toUser    User     @relation("ReceivedFriendRequests", fields: [toUserId], references: [id])
+  toUserId  String   @db.ObjectId
+  status    FriendRequestStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([fromUserId, toUserId])
+  @@map("friend_requests")
+}
+
+model Message {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  fromUser  User     @relation("SentMessages", fields: [fromUserId], references: [id])
+  fromUserId String  @db.ObjectId
+  toUser    User     @relation("ReceivedMessages", fields: [toUserId], references: [id])
+  toUserId  String   @db.ObjectId
+  content   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("messages")
+}
+
+model EmotionAlert {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  fromUser    User     @relation("SentAlerts", fields: [fromUserId], references: [id])
+  fromUserId  String   @db.ObjectId
+  toUser      User     @relation("ReceivedAlerts", fields: [toUserId], references: [id])
+  toUserId    String   @db.ObjectId
+  emotion     String   // e.g., "sadness", "crying", "distress"
+  intensity   Float    // 0.0 to 1.0
+  message     String?  // Optional message from the user
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@map("emotion_alerts")
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum UserStatus {
+  WAITLIST
+  APPROVED
+  REJECTED
+}
