@@ -2,95 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom emotion pulse animations */
-@keyframes pulse-red {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
+/* Dikeon AI Design System - Based on Figma Analysis */
 
-@keyframes pulse-green {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-@keyframes pulse-blue {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-.animate-pulse-red {
-  animation: pulse-red 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.animate-pulse-green {
-  animation: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.animate-pulse-blue {
-  animation: pulse-blue 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Emotion indicator glow effects */
-.emotion-glow-red {
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
-}
-
-.emotion-glow-green {
-  box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
-}
-
-.emotion-glow-blue {
-  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-}
-
-/* Smooth transitions for emotion changes */
-.emotion-transition {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Camera feed border effects */
-.camera-feed-border {
-  border: 2px solid transparent;
-  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899) border-box;
-  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: destination-out;
-  mask-composite: exclude;
-}
-
+/* CSS Custom Properties for Design System */
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  /* Light Theme Colors */
+  --bg-primary: #f9f4ed;
+  --bg-card: #ffffff;
+  --text-primary: #000000;
+  --text-muted: rgba(0, 0, 0, 0.5);
+  --text-muted-dark: rgba(9, 3, 0, 0.6);
+  --accent-orange: #ff7b00;
+  --accent-orange-light: rgba(255, 123, 0, 0.4);
+  --accent-orange-bg: rgba(255, 123, 0, 0.15);
+  --accent-blue: #261af6;
+  --accent-purple: #6d7dcd;
+  --accent-purple-light: rgba(109, 125, 205, 0.3);
+  --border-light: rgba(255, 123, 0, 0.2);
+  --border-gray: #d9d9d9;
+  --sidebar-bg: #dde2e5;
+  
+  /* Dark Theme Colors */
+  --dark-bg-primary: #090300;
+  --dark-bg-card: #1e1e1e;
+  --dark-text-primary: #f9f4ed;
+  --dark-text-muted: rgba(249, 244, 237, 0.5);
+  
+  /* Typography */
+  --font-primary: 'General Sans', sans-serif;
+  --font-secondary: 'DM Sans', sans-serif;
+  
+  /* Spacing */
+  --sidebar-collapsed: 58px;
+  --sidebar-expanded: 164px;
+  --border-radius: 30px;
+  --border-radius-small: 12px;
+  --border-radius-large: 45px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+/* Dark Theme Variables */
+[data-theme="dark"] {
+  --bg-primary: var(--dark-bg-primary);
+  --bg-card: var(--dark-bg-card);
+  --text-primary: var(--dark-text-primary);
+  --text-muted: var(--dark-text-muted);
+  --text-muted-dark: var(--dark-text-muted);
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(to bottom, transparent, rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
-}
-
+/* Base Styles */
 * {
   box-sizing: border-box;
   padding: 0;
@@ -101,11 +60,14 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  font-family: var(--font-secondary);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(to bottom, transparent, rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
+  min-height: 100vh;
 }
 
 a {
@@ -113,8 +75,167 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+/* Typography Classes */
+.font-primary {
+  font-family: var(--font-primary);
+  font-weight: 500;
+}
+
+.font-secondary {
+  font-family: var(--font-secondary);
+  font-weight: 400;
+}
+
+/* Component Base Styles */
+.card {
+  background-color: var(--bg-card);
+  border-radius: var(--border-radius);
+  padding: 28px 31px;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar {
+  width: var(--sidebar-collapsed);
+  transition: width 0.3s ease;
+}
+
+.sidebar.expanded {
+  width: var(--sidebar-expanded);
+}
+
+.nav-item {
+  width: 58px;
+  height: 58px;
+  border-radius: 41px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-card);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.nav-item.active {
+  background-color: var(--accent-orange);
+}
+
+.nav-item:hover {
+  background-color: var(--accent-orange-light);
+}
+
+/* Button Styles */
+.btn-primary {
+  background-color: var(--accent-orange);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 12px 24px;
+  font-family: var(--font-primary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #e66a00;
+  transform: translateY(-1px);
+}
+
+/* Form Elements */
+.input-field {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-gray);
+  border-radius: 31px;
+  padding: 7px 20px;
+  color: var(--text-primary);
+  font-family: var(--font-secondary);
+  transition: all 0.3s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 0 2px var(--accent-orange-light);
+}
+
+.input-field::placeholder {
+  color: var(--text-muted);
+}
+
+/* Toggle Switch */
+.toggle-switch {
+  width: 32px;
+  height: 16px;
+  background-color: var(--accent-orange-light);
+  border-radius: 11px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-switch.active {
+  background-color: var(--accent-orange);
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background-color: var(--bg-card);
+  border-radius: 8px;
+  top: 2px;
+  left: 2px;
+  transition: all 0.3s ease;
+}
+
+.toggle-switch.active::after {
+  left: 18px;
+}
+
+/* Activity Bars */
+.activity-bar {
+  width: 5px;
+  height: 22px;
+  background-color: var(--accent-purple-light);
+  border: 1px solid var(--accent-purple);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+/* Custom emotion pulse animations (preserved from original) */
+@keyframes pulse-red {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes pulse-green {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes pulse-blue {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse-red { animation: pulse-red 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+.animate-pulse-green { animation: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+.animate-pulse-blue { animation: pulse-blue 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+/* Emotion indicator glow effects (preserved from original) */
+.emotion-glow-red { box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
+.emotion-glow-green { box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); }
+.emotion-glow-blue { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+
+/* Smooth transitions for emotion changes (preserved from original) */
+.emotion-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* Camera feed border effects (preserved from original) */
+.camera-feed-border {
+  border: 2px solid transparent;
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
 }

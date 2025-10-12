@@ -213,28 +213,29 @@ export function AuthProvider({ children }: AuthProviderProps) {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <div className="container mx-auto flex min-h-screen items-center justify-center px-4">
-          <div className="w-full max-w-md">
-            {isSignupMode ? (
-              <SignupForm onSignup={signup} onSwitchToLogin={switchToLogin} error={error} />
-            ) : (
-              <LoginForm onLogin={login} onSwitchToSignup={switchToSignup} error={error} />
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Don't render auth forms here - let routing handle it
+  // if (!user) {
+  //   return (
+  //     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+  //       <div className="container mx-auto flex min-h-screen items-center justify-center px-4">
+  //         <div className="w-full max-w-md">
+  //           {isSignupMode ? (
+  //             <SignupForm onSignup={signup} onSwitchToLogin={switchToLogin} error={error} />
+  //           ) : (
+  //             <LoginForm onLogin={login} onSwitchToSignup={switchToSignup} error={error} />
+  //           )}
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   // Show waitlist status if user is not approved
-  if (user.status === "WAITLIST") {
+  if (user && user.status === "WAITLIST") {
     return <WaitlistStatus status="WAITLIST" />;
   }
 
-  if (user.status === "REJECTED") {
+  if (user && user.status === "REJECTED") {
     return <WaitlistStatus status="REJECTED" />;
   }
 
