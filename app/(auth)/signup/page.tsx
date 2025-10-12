@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../../components/auth/AuthProvider';
 import { useRouter } from 'next/navigation';
@@ -15,8 +15,15 @@ const SignUpPage: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const { signup } = useAuth();
+  const { signup, user, isLoading: authLoading } = useAuth();
   const router = useRouter();
+
+  // Redirect if user is already authenticated
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, authLoading, router]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -30,13 +37,14 @@ const SignUpPage: React.FC = () => {
     e.preventDefault();
     setError('');
     
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+    // Basic validation
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+      setError('Please fill in all fields');
       return;
     }
     
-    if (!formData.agreeToTerms) {
-      setError('Please agree to the terms and conditions');
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
       return;
     }
     
@@ -46,7 +54,7 @@ const SignUpPage: React.FC = () => {
       const [firstName, ...lastNameParts] = formData.name.split(' ');
       const lastName = lastNameParts.join(' ');
       await signup(firstName, lastName, formData.email, formData.password);
-      // AuthProvider will handle the redirect
+      // Redirect will be handled by useEffect when user state updates
     } catch (error) {
       setError('Failed to create account. Please try again.');
       console.error('Sign up error:', error);
@@ -55,232 +63,216 @@ const SignUpPage: React.FC = () => {
     }
   };
 
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-[#FF7B00] rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <span className="text-white font-primary text-2xl font-bold">D</span>
+          </div>
+          <p className="font-secondary text-lg text-gray-600">
+            Loading...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex" style={{ backgroundColor: '#F9F4ED' }}>
-      {/* Left Side - Form */}
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full max-w-md">
+    <div className="min-h-screen bg-white flex items-center justify-center p-8">
+      {/* Signup Section - centered on white background */}
+      <div className="bg-[#f9f4ed] rounded-[30px] overflow-hidden flex max-w-6xl w-full shadow-lg relative">
+        {/* Left Side - Form */}
+        <div className="flex-1 p-12 flex flex-col justify-center relative">
           {/* Logo */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-[#FF7B00] rounded-full flex items-center justify-center mx-auto mb-4">
-              <span className="text-white font-primary text-2xl font-bold">D</span>
-            </div>
-            <h1 className="font-primary text-4xl mb-2 text-black">
-              Join Dikeon AI
+          <div className="absolute left-8 top-8 w-[58px] h-[58px] overflow-hidden">
+            <img alt="" className="block max-w-none w-full h-full" src="http://localhost:3845/assets/b4ea37d37c887c1be8a5b84f561da456f4b202dd.svg" />
+          </div>
+
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="font-primary text-[40px] font-medium text-black mb-4">
+              Join Dikeon
             </h1>
-            <p className="font-secondary text-xl text-black/50">
-              Start your emotional wellness journey
+            <p className="font-secondary text-[20px] text-black">
+              Join your emotional support journey
             </p>
           </div>
 
-          {/* Sign Up Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="p-4 bg-red-100 border border-red-300 rounded-lg text-red-700 text-sm">
-                {error}
+          {/* Form */}
+          <div className="w-full max-w-md mx-auto">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              {error && (
+                <div className="p-4 bg-red-100 border border-red-300 rounded-lg text-red-700 text-sm">
+                  {error}
+                </div>
+              )}
+              
+              {/* First Name and Last Name */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-secondary text-[20px] text-black mb-3">
+                    First Name
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.name.split(' ')[0] || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, name: `${e.target.value} ${prev.name.split(' ')[1] || ''}`.trim() }))}
+                    className="w-full h-[50px] bg-white border border-[rgba(255,123,0,0.2)] rounded-[30px] px-4 text-black placeholder-black/50 focus:outline-none focus:border-[#FF7B00]"
+                    placeholder="First name"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-secondary text-[20px] text-black mb-3">
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.name.split(' ')[1] || ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, name: `${prev.name.split(' ')[0] || ''} ${e.target.value}`.trim() }))}
+                    className="w-full h-[50px] bg-white border border-[rgba(255,123,0,0.2)] rounded-[30px] px-4 text-black placeholder-black/50 focus:outline-none focus:border-[#FF7B00]"
+                    placeholder="Last name"
+                    required
+                  />
+                </div>
               </div>
-            )}
-            <div className="grid grid-cols-2 gap-4">
+
+              {/* Email Address */}
               <div>
-                <label htmlFor="firstName" className="block font-secondary text-sm mb-2 text-black">
-                  First Name
+                <label className="block font-secondary text-[20px] text-black mb-3">
+                  Email Address
                 </label>
                 <input
-                  type="text"
-                  id="firstName"
-                  name="firstName"
-                  value={formData.name.split(' ')[0] || ''}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: `${e.target.value} ${prev.name.split(' ')[1] || ''}`.trim() }))}
-                  className="w-full h-12 bg-white border border-[rgba(255,123,0,0.2)] rounded-[31px] px-5 text-black placeholder-black/50 focus:outline-none focus:border-[#FF7B00]"
-                  placeholder="First name"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  name="email"
+                  className="w-full h-[50px] bg-white border border-[rgba(255,123,0,0.2)] rounded-[30px] px-4 text-black placeholder-black/50 focus:outline-none focus:border-[#FF7B00]"
+                  placeholder="Enter your email"
                   required
                 />
               </div>
-              <div>
-                <label htmlFor="lastName" className="block font-secondary text-sm mb-2 text-black">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  id="lastName"
-                  name="lastName"
-                  value={formData.name.split(' ')[1] || ''}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: `${prev.name.split(' ')[0] || ''} ${e.target.value}`.trim() }))}
-                  className="w-full h-12 bg-white border border-[rgba(255,123,0,0.2)] rounded-[31px] px-5 text-black placeholder-black/50 focus:outline-none focus:border-[#FF7B00]"
-                  placeholder="Last name"
-                  required
-                />
-              </div>
-            </div>
 
-            <div>
-              <label htmlFor="email" className="block font-secondary text-sm mb-2 text-black">
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="w-full h-12 bg-white border border-[rgba(255,123,0,0.2)] rounded-[31px] px-5 text-black placeholder-black/50 focus:outline-none focus:border-[#FF7B00]"
-                placeholder="Enter your email"
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="password" className="block font-secondary text-sm mb-2 text-black">
-                  Password
-                </label>
-                <div className="relative">
+              {/* Password and Confirm Password */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-secondary text-[20px] text-black mb-3">
+                    Password
+                  </label>
                   <input
                     type="password"
-                    id="password"
-                    name="password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    className="w-full h-12 bg-white border border-[rgba(255,123,0,0.2)] rounded-[31px] px-5 pr-12 text-black placeholder-black/50 focus:outline-none focus:border-[#FF7B00]"
+                    name="password"
+                    className="w-full h-[50px] bg-white border border-[rgba(255,123,0,0.2)] rounded-[30px] px-4 text-black placeholder-black/50 focus:outline-none focus:border-[#FF7B00]"
                     placeholder="Create password"
                     required
                   />
-                  <button
-                    type="button"
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-black/50"
-                  >
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5Z" stroke="currentColor" strokeWidth="1.5"/>
-                      <path d="M17.5 10C15.5 13.5 12.5 15.5 10 15.5C7.5 15.5 4.5 13.5 2.5 10C4.5 6.5 7.5 4.5 10 4.5C12.5 4.5 15.5 6.5 17.5 10Z" stroke="currentColor" strokeWidth="1.5"/>
-                    </svg>
-                  </button>
                 </div>
-              </div>
-              <div>
-                <label htmlFor="confirmPassword" className="block font-secondary text-sm mb-2 text-black">
-                  Confirm Password
-                </label>
-                <div className="relative">
+                <div>
+                  <label className="block font-secondary text-[20px] text-black mb-3">
+                    Confirm Password
+                  </label>
                   <input
                     type="password"
-                    id="confirmPassword"
-                    name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
-                    className="w-full h-12 bg-white border border-[rgba(255,123,0,0.2)] rounded-[31px] px-5 pr-12 text-black placeholder-black/50 focus:outline-none focus:border-[#FF7B00]"
+                    name="confirmPassword"
+                    className="w-full h-[50px] bg-white border border-[rgba(255,123,0,0.2)] rounded-[30px] px-4 text-black placeholder-black/50 focus:outline-none focus:border-[#FF7B00]"
                     placeholder="Confirm password"
                     required
                   />
-                  <button
-                    type="button"
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-black/50"
-                  >
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5Z" stroke="currentColor" strokeWidth="1.5"/>
-                      <path d="M17.5 10C15.5 13.5 12.5 15.5 10 15.5C7.5 15.5 4.5 13.5 2.5 10C4.5 6.5 7.5 4.5 10 4.5C12.5 4.5 15.5 6.5 17.5 10Z" stroke="currentColor" strokeWidth="1.5"/>
-                    </svg>
-                  </button>
                 </div>
               </div>
-            </div>
 
-            <div className="flex items-start">
-              <input
-                type="checkbox"
-                id="agreeToTerms"
-                name="agreeToTerms"
-                checked={formData.agreeToTerms}
-                onChange={handleInputChange}
-                className="w-4 h-4 rounded border-gray-300 mt-1"
-                style={{ accentColor: '#FF7B00' }}
-                required
-              />
-              <label htmlFor="agreeToTerms" className="ml-2 font-secondary text-sm text-black/50">
-                I agree to the{' '}
-                <Link href="/terms" className="underline text-[rgba(255,123,0,0.4)]">
-                  Terms of Service
-                </Link>{' '}
-                and{' '}
-                <Link href="/privacy" className="underline text-[rgba(255,123,0,0.4)]">
-                  Privacy Policy
-                </Link>
-              </label>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full h-12 bg-[#FF7B00] text-white rounded-[30px] font-primary text-lg font-medium hover:bg-[#e66a00] transition-colors disabled:opacity-50"
-            >
-              {isLoading ? 'Creating Account...' : 'Create Account'}
-            </button>
-          </form>
-
-          {/* Sign In Link */}
-          <div className="text-center mt-6">
-            <p className="font-secondary text-sm text-black/50">
-              Already have an account?{' '}
-              <Link 
-                href="/signin" 
-                className="font-medium text-[rgba(255,123,0,0.4)]"
+              {/* Create Account Button */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-[#FF7B00] text-white rounded-[30px] h-[50px] font-primary text-[20px] font-medium hover:bg-[#e66a00] transition-colors disabled:opacity-50"
               >
-                Sign in
-              </Link>
-            </p>
+                {isLoading ? 'Creating Account...' : 'Create Account'}
+              </button>
+            </form>
+
+            {/* Sign In Link */}
+            <div className="text-center mt-8">
+              <p className="font-primary text-[20px] text-black">
+                <span>Already have an account? </span>
+                <Link
+                  href="/signin"
+                  className="text-[rgba(255,123,0,0.4)]"
+                >
+                  Sign in
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Right Side - Quote */}
-      <div className="flex-1 flex items-center justify-center p-8 relative">
-        <div className="text-center max-w-md">
-          <div 
-            className="p-8 rounded-3xl mb-6"
-            style={{ backgroundColor: 'rgba(255,123,0,0.15)' }}
-          >
-            <blockquote className="font-secondary text-xl italic mb-4 text-black">
-              "Every step forward in understanding your emotions is a step toward a healthier, happier you."
-            </blockquote>
-            <cite className="font-secondary text-sm text-black/50">
-              - Dikeon AI Team
-            </cite>
+        {/* Right Side - Exact Figma Structure */}
+        <div className="flex-1 relative flex flex-col justify-end px-[11px] py-5 h-[962px] w-[678px]">
+          {/* Background Images - With rotation */}
+          <div className="absolute inset-0 overflow-hidden">
+            {/* Main background image - the hands image with rotation */}
+            <div className="absolute left-[-500px] top-[50px] w-[1500px] h-[1200px]">
+              <div className="rotate-[-45deg] w-full h-full">
+                <img 
+                  alt="Background hands" 
+                  className="w-full h-full object-cover object-center opacity-50" 
+                  src="http://localhost:3845/assets/4047fb19aefcae7e4f5897acf3548dde3e6292b1.png"
+                  onError={(e) => {
+                    console.log('Background image failed to load');
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              </div>
+            </div>
+            
+            {/* Secondary background image with different rotation */}
+            <div className="absolute left-[-400px] bottom-[-100px] w-[1200px] h-[1100px]">
+              <div className="rotate-[30deg] w-full h-full">
+                <img 
+                  alt="Secondary background" 
+                  className="w-full h-full object-cover object-center opacity-40" 
+                  src="http://localhost:3845/assets/ab427fd396d3603f994c97b68a78e59355280a69.png"
+                  onError={(e) => {
+                    console.log('Secondary background image failed to load');
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              </div>
+            </div>
           </div>
-          
-          <div className="space-y-4">
-            <div className="flex items-center justify-center space-x-4">
-              <div className="w-12 h-12 bg-[#FF7B00] rounded-full flex items-center justify-center">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M2 17L12 22L22 17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M2 12L12 17L22 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+
+          {/* Content Container - Exact Figma structure */}
+          <div className="flex flex-col gap-7 w-[647px] relative">
+            {/* Tags */}
+            <div className="flex gap-8">
+              <div className="border border-white h-[39px] rounded-[30px] w-[114px] relative">
+                <div className="absolute bg-[rgba(255,255,255,0)] h-[62px] left-0 rounded-[30px] top-0 w-[227px]" />
+                <p className="absolute font-secondary font-normal left-[21px] text-[16px] text-white top-[9px] whitespace-pre">
+                  Feel Seen
+                </p>
               </div>
-              <span className="font-secondary text-lg text-black">
-                Track your emotional journey
-              </span>
+              <div className="border border-white h-[39px] rounded-[30px] w-[160px] relative">
+                <div className="absolute bg-[rgba(255,255,255,0)] h-[62px] left-0 rounded-[30px] top-0 w-[227px]" />
+                <p className="absolute font-secondary font-normal left-[21px] text-[16px] text-white top-[9px] whitespace-pre">
+                  Feel Connected
+                </p>
+              </div>
             </div>
-            
-            <div className="flex items-center justify-center space-x-4">
-              <div className="w-12 h-12 bg-[#FF7B00] rounded-full flex items-center justify-center">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <circle cx="12" cy="7" r="4" stroke="white" strokeWidth="2"/>
-                </svg>
+
+            {/* Quote Card */}
+            <div className="flex gap-[10px] h-[206px] items-center px-6 py-14 relative w-full">
+              <div className="absolute bg-[rgba(0,0,0,0)] h-[206px] left-0 rounded-[30px] top-0 w-[647px]">
+                <div className="absolute bg-[rgba(255,123,0,0.15)] h-[206px] left-0 rounded-[30px] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] top-0 w-[647px]" />
               </div>
-              <span className="font-secondary text-lg text-black">
-                Connect with supportive community
-              </span>
-            </div>
-            
-            <div className="flex items-center justify-center space-x-4">
-              <div className="w-12 h-12 bg-[#FF7B00] rounded-full flex items-center justify-center">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9 12L11 14L15 10" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <span className="font-secondary text-lg text-black">
-                Get personalized insights
-              </span>
+              <p className="font-secondary font-normal text-[24px] text-white w-[598px] relative">
+                We envision a world where feelings are no longer invisible: where therapy is smarter, care is faster, and digital spaces feel truly human again.
+              </p>
             </div>
           </div>
         </div>
