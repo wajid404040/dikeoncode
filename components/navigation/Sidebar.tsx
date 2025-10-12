@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import { useTheme } from '@/app/contexts/ThemeContext';
+import { useAuth } from '../auth/AuthProvider';
+import { useRouter } from 'next/navigation';
 
 interface NavItem {
   id: string;
@@ -19,6 +21,8 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'dashboard', onNavigate }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const { logout } = useAuth();
+  const router = useRouter();
 
   const navItems: NavItem[] = [
     {
@@ -98,9 +102,13 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'dashboard', onNavigate
     toggleTheme();
   };
 
-  const handleLogout = () => {
-    // Handle logout logic
-    console.log('Logout clicked');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push('/signin');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (
