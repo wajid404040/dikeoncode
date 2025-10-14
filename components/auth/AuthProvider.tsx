@@ -204,10 +204,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="flex min-h-screen items-center justify-center bg-[#f9f4ed]">
         <div className="text-center">
-          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-purple-500 border-t-transparent"></div>
-          <p className="text-white">Loading...</p>
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-[#ff7b00] border-t-transparent"></div>
+          <p className="text-black text-xl font-medium">Loading...</p>
         </div>
       </div>
     );
