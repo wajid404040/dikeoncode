@@ -4,10 +4,8 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function POST(request: NextRequest) {
+async function verifyToken(token: string) {
   try {
-    const { token } = await request.json();
-
     if (!token) {
       return NextResponse.json({ message: "Token is required" }, { status: 400 });
     }
@@ -59,4 +57,14 @@ export async function POST(request: NextRequest) {
     console.error("Token verification error:", error);
     return NextResponse.json({ message: "Invalid token" }, { status: 401 });
   }
+}
+
+export async function POST(request: NextRequest) {
+  const { token } = await request.json();
+  return verifyToken(token);
+}
+
+export async function GET(request: NextRequest) {
+  const token = request.headers.get("authorization")?.replace("Bearer ", "");
+  return verifyToken(token || "");
 }
