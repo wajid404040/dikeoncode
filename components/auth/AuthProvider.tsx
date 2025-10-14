@@ -3,7 +3,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { LoginForm } from "./LoginForm";
 import { SignupForm } from "./SignupForm";
-import { PersonalizationFlow } from "../PersonalizationFlow";
 import { WaitlistStatus } from "../WaitlistStatus";
 
 type User = {
@@ -32,7 +31,6 @@ type AuthContextType = {
   switchToSignup: () => void;
   switchToLogin: () => void;
   isSignupMode: boolean;
-  updateUserPreferences: (selectedAvatar: string, selectedVoice: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -46,7 +44,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
   const [isSignupMode, setIsSignupMode] = useState(false);
   const [error, setError] = useState<string>("");
-  const [showPersonalization, setShowPersonalization] = useState(false);
 
   useEffect(() => {
     // Check for existing token on app load
@@ -58,11 +55,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setLoading(false);
     }
 
-    // Check if user has already completed personalization
-    const hasCompletedPersonalization = localStorage.getItem("personalization-completed");
-    if (hasCompletedPersonalization === "true") {
-      setShowPersonalization(false);
-    }
   }, []);
 
   const verifyToken = async (token: string) => {
@@ -78,18 +70,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(userData.user);
         localStorage.setItem("auth-token", token);
 
-        // Only show personalization if user is approved AND missing preferences
-        if (userData.user.status === "APPROVED" && (!userData.user.selectedAvatar || !userData.user.selectedVoice)) {
-          // Check if user has already completed personalization
-          const hasCompletedPersonalization = localStorage.getItem("personalization-completed");
-          if (hasCompletedPersonalization !== "true") {
-            setShowPersonalization(true);
-          } else {
-            setShowPersonalization(false);
-          }
-        } else {
-          setShowPersonalization(false); // Explicitly hide if preferences are set
-        }
       } else {
         localStorage.removeItem("auth-token");
       }
@@ -118,18 +98,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         localStorage.setItem("auth-token", data.token);
         setIsSignupMode(false);
 
-        // Only show personalization if user is approved AND missing preferences
-        if (data.user.status === "APPROVED" && (!data.user.selectedAvatar || !data.user.selectedVoice)) {
-          // Check if user has already completed personalization
-          const hasCompletedPersonalization = localStorage.getItem("personalization-completed");
-          if (hasCompletedPersonalization !== "true") {
-            setShowPersonalization(true);
-          } else {
-            setShowPersonalization(false);
-          }
-        } else {
-          setShowPersonalization(false); // Explicitly hide if preferences are set
-        }
       } else {
         setError(data.message || "Login failed");
       }
@@ -156,8 +124,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         localStorage.setItem("auth-token", data.token);
         setIsSignupMode(false);
 
-        // New users always need personalization
-        setShowPersonalization(true);
       } else {
         setError(data.message || "Signup failed");
       }
@@ -169,38 +135,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = () => {
     setUser(null);
     localStorage.removeItem("auth-token");
-    localStorage.removeItem("personalization-completed");
   };
 
   const switchToSignup = () => setIsSignupMode(true);
   const switchToLogin = () => setIsSignupMode(false);
 
-  const updateUserPreferences = async (selectedAvatar: string, selectedVoice: string) => {
-    if (!user) return;
-
-    try {
-      const token = localStorage.getItem("auth-token");
-      const response = await fetch("/api/auth/update-preferences", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ selectedAvatar, selectedVoice }),
-      });
-
-      if (response.ok) {
-        const updatedUser = await response.json();
-        setUser(updatedUser.user);
-        setShowPersonalization(false); // Hide personalization after completion
-
-        // Mark personalization as completed in localStorage
-        localStorage.setItem("personalization-completed", "true");
-      }
-    } catch (error) {
-      console.error("Failed to update user preferences:", error);
-    }
-  };
 
   if (loading) {
     return (
@@ -234,10 +173,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return <WaitlistStatus status="REJECTED" />;
   }
 
-  // Show personalization flow if needed
-  if (showPersonalization) {
-    return <PersonalizationFlow onComplete={updateUserPreferences} onSkip={() => setShowPersonalization(false)} />;
-  }
 
   return (
     <AuthContext.Provider
@@ -250,7 +185,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         switchToSignup,
         switchToLogin,
         isSignupMode,
-        updateUserPreferences,
       }}
     >
       {children}
