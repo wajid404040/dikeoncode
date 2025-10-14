@@ -241,6 +241,7 @@ export default function Dashboard() {
   const [selectedMood, setSelectedMood] = useState("");
   const [moodNotes, setMoodNotes] = useState("");
   const [isSubmittingMood, setIsSubmittingMood] = useState(false);
+  const [isNavbarExpanded, setIsNavbarExpanded] = useState(true);
 
   const [settings, setSettings] = useState({
     selectedAvatar: "Ala",
@@ -550,95 +551,189 @@ export default function Dashboard() {
   return (
     <div className="bg-[#f9f4ed] min-h-screen flex">
       {/* Left Sidebar */}
-      <div className="w-[90px] bg-white flex flex-col items-center py-8 gap-6">
+      <div className={`${isNavbarExpanded ? 'w-[280px]' : 'w-[90px]'} bg-white flex flex-col items-center py-8 gap-6 transition-all duration-300 relative`}>
+        {/* Toggle Button */}
+        <div className="absolute top-4 -right-4 z-10">
+          <button
+            onClick={() => setIsNavbarExpanded(!isNavbarExpanded)}
+            className="w-8 h-8 bg-[#ff7b00] rounded-full flex items-center justify-center text-white hover:bg-[#e66a00] transition-colors shadow-lg"
+          >
+            {isNavbarExpanded ? (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            )}
+          </button>
+        </div>
+
         {/* Logo */}
         <div className="w-[58px] h-[58px] overflow-hidden">
           <img alt="DIA Logo" className="w-full h-full object-contain" src={imgLayer1} />
         </div>
 
-        {/* Navigation Icons */}
-        <div className="flex flex-col gap-4">
+        {/* Navigation Items */}
+        <div className="flex flex-col gap-[18px] w-full">
           {/* Dashboard (Active) */}
           <div 
-            className="w-[58px] h-[58px] bg-[#ff7b00] rounded-[41px] flex items-center justify-center cursor-pointer"
+            className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 ${
+              isNavbarExpanded ? 'px-4' : 'justify-center'
+            }`}
             onClick={() => setActiveTab("dashboard")}
           >
-            <div className="w-[24px] h-[24px]">
-              <img alt="Dashboard" className="w-full h-full object-contain" src={imgGroup1} />
+            <div className="w-[58px] h-[58px] bg-[#ff7b00] rounded-[41px] flex items-center justify-center flex-shrink-0">
+              <div className="w-[24px] h-[24px]">
+                <img alt="Dashboard" className="w-full h-full object-contain" src={imgGroup1} />
+              </div>
             </div>
+            {isNavbarExpanded && (
+              <span className="text-[14px] font-medium text-black whitespace-nowrap">Dashboard</span>
+            )}
           </div>
 
           {/* Check-in */}
           <div 
-            className="w-[58px] h-[58px] bg-white rounded-[41px] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+            className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 hover:bg-gray-50 rounded-lg ${
+              isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
+            }`}
             onClick={() => window.location.href = '/checkin'}
           >
-            <div className="w-[30px] h-[30px]">
-              <img alt="Check-in" className="w-full h-full object-contain" src={imgCheckIn} />
+            <div className="w-[58px] h-[58px] bg-white rounded-[41px] flex items-center justify-center flex-shrink-0">
+              <div className="w-[30px] h-[30px]">
+                <img alt="Check-in" className="w-full h-full object-contain" src={imgCheckIn} />
+              </div>
             </div>
+            {isNavbarExpanded && (
+              <span className="text-[14px] font-medium text-black whitespace-nowrap">Check-in</span>
+            )}
           </div>
 
           {/* Notes/Reflections */}
           <div 
-            className="w-[58px] h-[58px] bg-white rounded-[41px] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+            className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 hover:bg-gray-50 rounded-lg ${
+              isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
+            }`}
             onClick={() => window.location.href = '/reflections'}
           >
-            <div className="w-[30px] h-[30px]">
-              <img alt="Notes" className="w-full h-full object-contain" src={imgNotes} />
+            <div className="w-[58px] h-[58px] bg-white rounded-[41px] flex items-center justify-center flex-shrink-0">
+              <div className="w-[30px] h-[30px]">
+                <img alt="Notes" className="w-full h-full object-contain" src={imgNotes} />
+              </div>
             </div>
+            {isNavbarExpanded && (
+              <span className="text-[14px] font-medium text-black whitespace-nowrap">Notes</span>
+            )}
           </div>
 
           {/* Friends */}
           <div 
-            className="w-[58px] h-[58px] bg-white rounded-[41px] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+            className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 hover:bg-gray-50 rounded-lg ${
+              isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
+            }`}
             onClick={() => window.location.href = '/friends'}
           >
-            <div className="w-[30px] h-[30px]">
-              <img alt="Friends" className="w-full h-full object-contain" src={imgFriends} />
+            <div className="w-[58px] h-[58px] bg-white rounded-[41px] flex items-center justify-center flex-shrink-0">
+              <div className="w-[30px] h-[30px]">
+                <img alt="Friends" className="w-full h-full object-contain" src={imgFriends} />
+              </div>
             </div>
+            {isNavbarExpanded && (
+              <span className="text-[14px] font-medium text-black whitespace-nowrap">Friends</span>
+            )}
           </div>
         </div>
 
-        {/* Bottom Icons */}
-        <div className="flex flex-col gap-4 mt-auto">
-          {/* Chat */}
+        {/* Middle Section */}
+        <div className="flex flex-col gap-[18px] w-full">
+          {/* Feedback */}
           <div 
-            className="w-[58px] h-[58px] bg-white rounded-[45px] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
-            onClick={() => window.location.href = '/checkin'}
-          >
-            <div className="w-[28px] h-[28px]">
-              <img alt="Chat" className="w-full h-full object-contain" src={imgFrame1} />
-            </div>
-          </div>
-
-          {/* Target/Goals */}
-          <div 
-            className="w-[58px] h-[58px] bg-white rounded-[45px] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+            className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 hover:bg-gray-50 rounded-lg ${
+              isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
+            }`}
             onClick={() => window.location.href = '/feedback'}
           >
-            <div className="w-[30px] h-[30px]">
-              <img alt="Target" className="w-full h-full object-contain" src={imgFrame2} />
+            <div className="w-[58px] h-[58px] bg-white rounded-[45px] flex items-center justify-center flex-shrink-0">
+              <div className="w-[28px] h-[28px]">
+                <img alt="Feedback" className="w-full h-full object-contain" src={imgFrame1} />
+              </div>
             </div>
+            {isNavbarExpanded && (
+              <span className="text-[14px] font-medium text-[#090300] whitespace-nowrap">Feedback</span>
+            )}
+          </div>
+
+          {/* Urgent Help */}
+          <div 
+            className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 hover:bg-gray-50 rounded-lg ${
+              isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
+            }`}
+            onClick={() => window.location.href = '/help'}
+          >
+            <div className="w-[58px] h-[58px] bg-white rounded-[45px] flex items-center justify-center flex-shrink-0">
+              <div className="w-[30px] h-[30px]">
+                <img alt="Urgent Help" className="w-full h-full object-contain" src={imgFrame2} />
+              </div>
+            </div>
+            {isNavbarExpanded && (
+              <span className="text-[14px] font-medium text-[#090300] whitespace-nowrap">Urgent Help</span>
+            )}
+          </div>
+        </div>
+
+        {/* Bottom Section */}
+        <div className="flex flex-col gap-[18px] w-full mt-auto">
+          {/* Dark Mode */}
+          <div 
+            className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 hover:bg-gray-50 rounded-lg ${
+              isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
+            }`}
+            onClick={() => {/* TODO: Implement dark mode toggle */}}
+          >
+            <div className="w-[58px] h-[58px] bg-white rounded-[45px] flex items-center justify-center flex-shrink-0">
+              <div className="w-[30px] h-[30px]">
+                <img alt="Dark Mode" className="w-full h-full object-contain" src={imgFrame3} />
+              </div>
+            </div>
+            {isNavbarExpanded && (
+              <span className="text-[14px] font-medium text-black whitespace-nowrap">Dark Mode</span>
+            )}
           </div>
 
           {/* Settings */}
           <div 
-            className="w-[58px] h-[58px] bg-white rounded-[45px] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+            className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 hover:bg-gray-50 rounded-lg ${
+              isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
+            }`}
             onClick={() => setIsSettingsOpen(true)}
           >
-            <div className="w-[30px] h-[30px]">
-              <img alt="Settings" className="w-full h-full object-contain" src={imgSettings} />
+            <div className="w-[58px] h-[58px] bg-white rounded-[45px] flex items-center justify-center flex-shrink-0">
+              <div className="w-[30px] h-[30px]">
+                <img alt="Settings" className="w-full h-full object-contain" src={imgSettings} />
+              </div>
             </div>
+            {isNavbarExpanded && (
+              <span className="text-[14px] font-medium text-black whitespace-nowrap">Settings</span>
+            )}
           </div>
 
           {/* Logout */}
           <div 
-            className="w-[58px] h-[58px] bg-white rounded-[45px] flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+            className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 hover:bg-gray-50 rounded-lg ${
+              isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
+            }`}
             onClick={logout}
           >
-            <div className="w-[30px] h-[30px]">
-              <img alt="Logout" className="w-full h-full object-contain" src={imgLogout} />
+            <div className="w-[58px] h-[58px] bg-white rounded-[45px] flex items-center justify-center flex-shrink-0">
+              <div className="w-[30px] h-[30px]">
+                <img alt="Logout" className="w-full h-full object-contain" src={imgLogout} />
+              </div>
             </div>
+            {isNavbarExpanded && (
+              <span className="text-[14px] font-medium text-black whitespace-nowrap">Logout</span>
+            )}
           </div>
         </div>
       </div>
