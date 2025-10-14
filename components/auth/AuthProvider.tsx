@@ -215,16 +215,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <div className="container mx-auto flex min-h-screen items-center justify-center px-4">
-          <div className="w-full max-w-md">
-            {isSignupMode ? (
-              <SignupForm onSignup={signup} onSwitchToLogin={switchToLogin} error={error} />
-            ) : (
-              <LoginForm onLogin={login} onSwitchToSignup={switchToSignup} error={error} />
-            )}
-          </div>
-        </div>
+      <div className="min-h-screen">
+        {isSignupMode ? (
+          <SignupForm onSignup={signup} onSwitchToLogin={switchToLogin} error={error} />
+        ) : (
+          <LoginForm onLogin={login} onSwitchToSignup={switchToSignup} error={error} />
+        )}
       </div>
     );
   }
