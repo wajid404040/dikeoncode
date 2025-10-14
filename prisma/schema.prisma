@@ -45,6 +45,12 @@ model User {
   
   // Feedback
   feedback        Feedback[]
+  
+  // Complaints
+  complaints      Complaint[]
+  
+  // Contact messages
+  contactMessages ContactMessage[]
 
   @@map("users")
 }
@@ -120,6 +126,39 @@ model Feedback {
   updatedAt         DateTime @updatedAt
 
   @@map("feedback")
+}
+
+model Complaint {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  user              User     @relation(fields: [userId], references: [id])
+  userId            String   @db.ObjectId
+  title             String
+  description       String
+  category          String   // e.g., "technical", "billing", "account", "feature", "privacy", "other"
+  priority          String   // "low", "medium", "high", "urgent"
+  status            String   // "open", "in_progress", "resolved", "closed"
+  adminResponse     String?  // Admin's response to the complaint
+  adminResponseDate DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("complaints")
+}
+
+model ContactMessage {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?  @db.ObjectId
+  name      String
+  email     String
+  subject   String?
+  message   String
+  type      String   // "general", "support", "business", "partnership"
+  status    String   // "new", "read", "replied", "closed"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contact_messages")
 }
 
 enum FriendRequestStatus {
