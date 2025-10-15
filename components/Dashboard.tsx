@@ -1410,89 +1410,181 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Chat Interface - Exact Figma Design */}
-                <div className="flex-1 bg-[#f9f4ed] relative">
-                  {/* Main Chat Area */}
-                  <div className="absolute bg-[#f9f4ed] h-[808px] left-[214px] rounded-[30px] top-[169px] w-[1104px]">
-                    {/* Chat Messages - Exact Figma Positioning */}
-                    {conversationHistory.length === 0 ? (
-                      <div className="flex items-center justify-center h-full">
-                        <div className="text-center">
-                          <p className="text-[24px] text-[rgba(9,3,0,0.6)] mb-4">Start a conversation with DIA</p>
-                          <p className="text-[16px] text-[rgba(9,3,0,0.4)]">Share how you're feeling or ask for support</p>
+                {/* Beautiful Chat Interface */}
+                <div className="flex-1 bg-gradient-to-br from-[#f9f4ed] via-[#fef7f0] to-[#f9f4ed] flex flex-col">
+                  {/* Elegant Header */}
+                  <div className="bg-white/80 backdrop-blur-lg border-b border-white/20 shadow-sm">
+                    <div className="flex items-center justify-between p-6">
+                      {/* Left - Welcome Message */}
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-[#ff7b00] to-[#ff9500] rounded-full flex items-center justify-center shadow-lg">
+                          <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <h1 className="text-2xl font-bold text-gray-800">Chat with DIA</h1>
+                          <p className="text-sm text-gray-600">Your AI emotional support companion</p>
                         </div>
                       </div>
-                    ) : (
-                      <>
-                        {/* AI Message - Left side, exact Figma positioning */}
-                        {conversationHistory.filter(msg => msg.role === 'assistant').map((message, index) => (
-                          <div key={`ai-${index}`} className="absolute left-[314px] top-[278px] w-[579px]">
-                            <p className="text-[12px] text-black font-medium leading-normal">
-                              {message.content}
-                            </p>
-                          </div>
-                        ))}
-                        
-                        {/* User Messages - Right side, exact Figma positioning */}
-                        {conversationHistory.filter(msg => msg.role === 'user').map((message, index) => (
-                          <div key={`user-${index}`} className="absolute right-[214px] top-[190px] w-[142px]">
-                            <div className="bg-white h-[38px] rounded-[30px] flex items-center justify-center">
-                              <p className="text-[12px] text-[rgba(0,0,0,0.5)] font-medium">
-                                {message.content.length > 20 ? message.content.substring(0, 20) + '...' : message.content}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                        
-                        {/* Longer User Message - Right side, exact Figma positioning */}
-                        {conversationHistory.filter(msg => msg.role === 'user' && msg.content.length > 50).map((message, index) => (
-                          <div key={`user-long-${index}`} className="absolute right-[214px] top-[344px] w-[398px]">
-                            <div className="bg-white h-[102px] rounded-[30px] p-4">
-                              <p className="text-[12px] text-[rgba(0,0,0,0.5)] font-medium leading-normal">
-                                {message.content}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                      </>
-                    )}
-                  </div>
 
-                  {/* Chat Input - Exact Figma Design */}
-                  <div className="absolute bg-white border border-[rgba(255,123,0,0.4)] border-solid box-border content-stretch flex flex-col gap-[10px] h-[50px] items-start left-[321px] px-[20px] py-[7px] rounded-[31px] top-[867px] w-[891px]">
-                    <div className="content-stretch flex items-center justify-between relative shrink-0 w-[841px]">
-                      <input
-                        type="text"
-                        value={chatMessage}
-                        onChange={(e) => setChatMessage(e.target.value)}
-                        placeholder="Type a message"
-                        className="flex-1 text-[20px] text-[rgba(0,0,0,0.5)] bg-transparent border-none outline-none"
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            sendChatMessage();
-                          }
-                        }}
-                        disabled={isSendingMessage}
-                      />
-                      <div className="content-stretch flex gap-[17px] items-center relative shrink-0">
-                        {/* Send Button */}
-                        <div 
-                          className="overflow-clip relative shrink-0 size-[24px] cursor-pointer hover:opacity-70 transition-opacity"
-                          onClick={sendChatMessage}
-                        >
-                          <div className="absolute inset-[18.75%_26.25%_16.25%_26.25%]">
-                            <img alt="Send" className="block max-w-none size-full" src={imgGroup} />
+                      {/* Right - Status & Controls */}
+                      <div className="flex items-center gap-4">
+                        {/* Mood Status */}
+                        <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-4 py-2 shadow-sm border border-white/50">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                            <span className="text-sm font-medium text-gray-700">
+                              Feeling {recentReflections.length > 0 ? recentReflections[0].mood : currentMood}
+                            </span>
                           </div>
                         </div>
-                        {/* Voice Input Button */}
-                        <div 
-                          className="bg-[#f9f4ed] box-border content-stretch flex gap-[10px] items-center justify-center p-[2px] relative rounded-[17.5px] shrink-0 size-[35px] cursor-pointer hover:bg-gray-200 transition-colors"
-                          onClick={() => handleVoiceInput()}
+
+                        {/* Monitor Toggle */}
+                        <button
+                          onClick={toggleEmotionalMonitoring}
+                          className={`p-3 rounded-2xl transition-all duration-300 ${
+                            isEmotionalMonitoring 
+                              ? 'bg-gradient-to-r from-[#ff7b00] to-[#ff9500] text-white shadow-lg' 
+                              : 'bg-white/90 backdrop-blur-sm text-gray-600 hover:bg-white'
+                          }`}
                         >
-                          <div className="relative shrink-0 size-[24px]">
-                            <img alt="Voice" className="block max-w-none size-full" src={imgFrame} />
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                          </svg>
+                        </button>
+
+                        {/* User Avatar */}
+                        <div className="w-10 h-10 bg-gradient-to-br from-[#ff7b00] to-[#ff9500] rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                          {user?.name?.[0]}{user?.surname?.[0]}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Chat Container */}
+                  <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full p-6">
+                    {/* Messages Area */}
+                    <div className="flex-1 overflow-y-auto mb-6 space-y-4">
+                      {conversationHistory.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center h-full text-center">
+                          <div className="w-24 h-24 bg-gradient-to-br from-[#ff7b00] to-[#ff9500] rounded-full flex items-center justify-center mb-6 shadow-xl">
+                            <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                            </svg>
                           </div>
+                          <h2 className="text-2xl font-bold text-gray-800 mb-2">Welcome to DIA Chat</h2>
+                          <p className="text-gray-600 mb-6 max-w-md">
+                            I'm here to listen, support, and help you through whatever you're feeling. 
+                            Start a conversation by typing a message below.
+                          </p>
+                          <div className="flex flex-wrap gap-2 justify-center">
+                            {[
+                              "How are you feeling today?",
+                              "I need someone to talk to",
+                              "Help me understand my emotions",
+                              "I'm feeling overwhelmed"
+                            ].map((suggestion, index) => (
+                              <button
+                                key={index}
+                                onClick={() => setChatMessage(suggestion)}
+                                className="px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full text-sm text-gray-700 hover:bg-white hover:shadow-md transition-all duration-200 border border-white/50"
+                              >
+                                {suggestion}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {conversationHistory.map((message, index) => (
+                            <div
+                              key={index}
+                              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                            >
+                              <div
+                                className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
+                                  message.role === 'user'
+                                    ? 'bg-gradient-to-r from-[#ff7b00] to-[#ff9500] text-white shadow-lg'
+                                    : 'bg-white/90 backdrop-blur-sm text-gray-800 shadow-sm border border-white/50'
+                                }`}
+                              >
+                                <p className="text-sm leading-relaxed">{message.content}</p>
+                                <p className={`text-xs mt-1 ${
+                                  message.role === 'user' ? 'text-orange-100' : 'text-gray-500'
+                                }`}>
+                                  {message.timestamp ? new Date(message.timestamp).toLocaleTimeString([], {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  }) : 'Just now'}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                          {isSendingMessage && (
+                            <div className="flex justify-start">
+                              <div className="bg-white/90 backdrop-blur-sm text-gray-800 shadow-sm border border-white/50 px-4 py-3 rounded-2xl">
+                                <div className="flex items-center gap-2">
+                                  <div className="flex space-x-1">
+                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                                  </div>
+                                  <span className="text-sm text-gray-600">DIA is typing...</span>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Input Area */}
+                    <div className="bg-white/90 backdrop-blur-lg rounded-2xl p-4 shadow-lg border border-white/50">
+                      <div className="flex items-end gap-3">
+                        <div className="flex-1">
+                          <textarea
+                            value={chatMessage}
+                            onChange={(e) => setChatMessage(e.target.value)}
+                            placeholder="Share what's on your mind..."
+                            className="w-full resize-none border-none outline-none bg-transparent text-gray-800 placeholder-gray-500 text-sm leading-relaxed"
+                            rows={1}
+                            style={{minHeight: '24px', maxHeight: '120px'}}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                sendChatMessage();
+                              }
+                            }}
+                            disabled={isSendingMessage}
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {/* Voice Input */}
+                          <button
+                            onClick={() => handleVoiceInput()}
+                            className="p-2 text-gray-600 hover:text-[#ff7b00] hover:bg-orange-50 rounded-xl transition-all duration-200"
+                            disabled={isSendingMessage}
+                          >
+                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
+                            </svg>
+                          </button>
+                          
+                          {/* Send Button */}
+                          <button
+                            onClick={sendChatMessage}
+                            disabled={!chatMessage.trim() || isSendingMessage}
+                            className="p-2 bg-gradient-to-r from-[#ff7b00] to-[#ff9500] text-white rounded-xl hover:from-[#e66a00] hover:to-[#ff7b00] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+                          >
+                            {isSendingMessage ? (
+                              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            ) : (
+                              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                              </svg>
+                            )}
+                          </button>
                         </div>
                       </div>
                     </div>
