@@ -209,6 +209,7 @@ const imgSettings = "http://localhost:3845/assets/01a90ca65d1952442d95d7aa14fc48
 const imgLogout = "http://localhost:3845/assets/606823b76fa0be08f8a1e8861f93eba461c43721.svg";
 const imgMonitor = "http://localhost:3845/assets/fc82b06f76671d65a66664fe6d6a3f7746c75075.svg";
 const imgBell = "http://localhost:3845/assets/bcfecf8334d4c937c84289b1f849f35109fbade0.svg";
+const img1 = "http://localhost:3845/assets/87b4d84fae626986207e0e524e1e5204e2d2e79e.svg";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -232,6 +233,7 @@ export default function Dashboard() {
 
   // Dashboard states
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [showNotesInterface, setShowNotesInterface] = useState(false); // State to toggle notes interface
   const [currentMood, setCurrentMood] = useState("Calm");
   const [moodHistory, setMoodHistory] = useState<any[]>([]);
   const [recentReflections, setRecentReflections] = useState<any[]>([]);
@@ -689,15 +691,23 @@ export default function Dashboard() {
             className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 rounded-lg ${
               isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
             }`}
-            onClick={() => window.location.href = '/reflections'}
+            onClick={() => {
+              setShowNotesInterface(true);
+              setShowChatInterface(false);
+              setActiveTab("notes");
+            }}
           >
-            <div className="w-[58px] h-[58px] bg-white border border-gray-200 rounded-[41px] flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:scale-105 hover:bg-gray-50">
+            <div className={`w-[58px] h-[58px] rounded-[41px] flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:scale-105 ${
+              showNotesInterface && activeTab === "notes" ? 'bg-[#ff7b00]' : 'bg-white border border-gray-200 hover:bg-gray-50'
+            }`}>
               <div className="w-[30px] h-[30px]">
                 <img alt="Notes" className="w-full h-full object-contain" src={imgNotes} />
               </div>
             </div>
             {isNavbarExpanded && (
-              <span className="text-[14px] font-medium text-black whitespace-nowrap">Notes</span>
+              <span className={`text-[14px] font-medium whitespace-nowrap ${
+                showNotesInterface && activeTab === "notes" ? 'text-white' : 'text-black'
+              }`}>Notes</span>
             )}
           </div>
 
@@ -1036,7 +1046,11 @@ export default function Dashboard() {
                 <h2 className="text-[32px] font-medium text-black">Recent Reflections</h2>
                 <div 
                   className="flex items-center gap-2 cursor-pointer hover:opacity-70 transition-opacity"
-                  onClick={() => window.location.href = '/reflections'}
+                  onClick={() => {
+                    setShowNotesInterface(true);
+                    setShowChatInterface(false);
+                    setActiveTab("notes");
+                  }}
                 >
                   <p className="text-[10px] text-black">View All</p>
                   <div className="w-4 h-4">
@@ -1219,18 +1233,26 @@ export default function Dashboard() {
 
                   {/* Notes/Reflections */}
                   <div 
-                    className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 hover:bg-gray-50 rounded-lg ${
+                    className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 rounded-lg ${
                       isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
                     }`}
-                    onClick={() => window.location.href = '/reflections'}
+                    onClick={() => {
+                      setShowNotesInterface(true);
+                      setShowChatInterface(false);
+                      setActiveTab("notes");
+                    }}
                   >
-                    <div className="w-[58px] h-[58px] bg-white rounded-[41px] flex items-center justify-center flex-shrink-0">
+                    <div className={`w-[58px] h-[58px] rounded-[41px] flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:scale-105 ${
+                      showNotesInterface && activeTab === "notes" ? 'bg-[#ff7b00]' : 'bg-white border border-gray-200 hover:bg-gray-50'
+                    }`}>
                       <div className="w-[30px] h-[30px]">
                         <img alt="Notes" className="w-full h-full object-contain" src={imgNotes} />
                       </div>
                     </div>
                     {isNavbarExpanded && (
-                      <span className="text-[14px] font-medium text-black whitespace-nowrap">Notes</span>
+                      <span className={`text-[14px] font-medium whitespace-nowrap ${
+                        showNotesInterface && activeTab === "notes" ? 'text-white' : 'text-black'
+                      }`}>Notes</span>
                     )}
                   </div>
 
@@ -1591,6 +1613,354 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Notes Interface */}
+          {showNotesInterface && (
+            <div className="fixed inset-0 bg-[#f9f4ed] z-40 flex">
+              {/* Left Sidebar - Same as dashboard */}
+              <div className={`${isNavbarExpanded ? 'w-[280px]' : 'w-[90px]'} bg-white flex flex-col items-center py-8 gap-6 transition-all duration-300 relative shadow-lg border-r border-gray-100`}>
+                {/* Toggle Button */}
+                <div className="absolute top-4 -right-4 z-10">
+                  <button
+                    onClick={() => setIsNavbarExpanded(!isNavbarExpanded)}
+                    className="w-8 h-8 bg-[#ff7b00] rounded-full flex items-center justify-center text-white hover:bg-[#e66a00] transition-colors shadow-lg"
+                  >
+                    {isNavbarExpanded ? (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+
+                {/* Logo */}
+                <div className="w-[58px] h-[58px] overflow-hidden mb-4">
+                  <img alt="DIA Logo" className="w-full h-full object-contain drop-shadow-sm" src={imgLayer1} />
+                </div>
+
+                {/* Navigation Items */}
+                <div className="flex flex-col gap-[18px] w-full">
+                  {/* Dashboard */}
+                  <div 
+                    className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 rounded-lg ${
+                      isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
+                    }`}
+                    onClick={() => {
+                      setActiveTab("dashboard");
+                      setShowNotesInterface(false);
+                    }}
+                  >
+                    <div className="w-[58px] h-[58px] bg-white border-2 border-black rounded-[41px] flex items-center justify-center flex-shrink-0">
+                      <div className="w-[24px] h-[24px]">
+                        <svg viewBox="0 0 24 24" fill="black" className="w-full h-full">
+                          <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                        </svg>
+                      </div>
+                    </div>
+                    {isNavbarExpanded && (
+                      <span className="text-[14px] font-medium text-black whitespace-nowrap">Dashboard</span>
+                    )}
+                  </div>
+
+                  {/* Check-in */}
+                  <div 
+                    className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 rounded-lg ${
+                      isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
+                    }`}
+                    onClick={() => {
+                      setShowChatInterface(true);
+                      setShowNotesInterface(false);
+                      setActiveTab("checkin");
+                    }}
+                  >
+                    <div className="w-[58px] h-[58px] bg-white border border-gray-200 rounded-[41px] flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:scale-105 hover:bg-gray-50">
+                      <div className="w-[30px] h-[30px]">
+                        <img alt="Check-in" className="w-full h-full object-contain" src={imgCheckIn} />
+                      </div>
+                    </div>
+                    {isNavbarExpanded && (
+                      <span className="text-[14px] font-medium text-black whitespace-nowrap">Check-in</span>
+                    )}
+                  </div>
+
+                  {/* Notes/Reflections - Active */}
+                  <div 
+                    className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 rounded-lg ${
+                      isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
+                    }`}
+                  >
+                    <div className="w-[58px] h-[58px] bg-[#ff7b00] rounded-[41px] flex items-center justify-center flex-shrink-0">
+                      <div className="w-[30px] h-[30px]">
+                        <img alt="Notes" className="w-full h-full object-contain" src={imgNotes} />
+                      </div>
+                    </div>
+                    {isNavbarExpanded && (
+                      <span className="text-[14px] font-medium text-white whitespace-nowrap">Notes</span>
+                    )}
+                  </div>
+
+                  {/* Friends */}
+                  <div 
+                    className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 rounded-lg ${
+                      isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
+                    }`}
+                    onClick={() => window.location.href = '/friends'}
+                  >
+                    <div className="w-[58px] h-[58px] bg-white border border-gray-200 rounded-[41px] flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:scale-105 hover:bg-gray-50">
+                      <div className="w-[30px] h-[30px]">
+                        <img alt="Friends" className="w-full h-full object-contain" src={imgFriends} />
+                      </div>
+                    </div>
+                    {isNavbarExpanded && (
+                      <span className="text-[14px] font-medium text-black whitespace-nowrap">Friends</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Middle Section */}
+                <div className="flex flex-col gap-[18px] w-full">
+                  {/* Feedback */}
+                  <div 
+                    className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 rounded-lg ${
+                      isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
+                    }`}
+                    onClick={() => window.location.href = '/feedback'}
+                  >
+                    <div className="w-[58px] h-[58px] bg-white border border-gray-200 rounded-[45px] flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:scale-105 hover:bg-gray-50">
+                      <div className="w-[28px] h-[28px]">
+                        <img alt="Feedback" className="w-full h-full object-contain" src={imgFrame1} />
+                      </div>
+                    </div>
+                    {isNavbarExpanded && (
+                      <span className="text-[14px] font-medium text-black whitespace-nowrap">Feedback</span>
+                    )}
+                  </div>
+
+                  {/* Urgent Help */}
+                  <div 
+                    className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 rounded-lg ${
+                      isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
+                    }`}
+                    onClick={() => window.location.href = '/help'}
+                  >
+                    <div className="w-[58px] h-[58px] bg-white border border-gray-200 rounded-[45px] flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:scale-105 hover:bg-gray-50">
+                      <div className="w-[30px] h-[30px]">
+                        <img alt="Urgent Help" className="w-full h-full object-contain" src={imgFrame2} />
+                      </div>
+                    </div>
+                    {isNavbarExpanded && (
+                      <span className="text-[14px] font-medium text-black whitespace-nowrap">Urgent Help</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Bottom Section */}
+                <div className="flex flex-col gap-[18px] w-full mt-auto">
+                  {/* Dark Mode */}
+                  <div 
+                    className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 rounded-lg ${
+                      isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
+                    }`}
+                    onClick={() => {/* TODO: Implement dark mode toggle */}}
+                  >
+                    <div className="w-[58px] h-[58px] bg-white border border-gray-200 rounded-[45px] flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:scale-105 hover:bg-gray-50">
+                      <div className="w-[30px] h-[30px]">
+                        <img alt="Dark Mode" className="w-full h-full object-contain" src={imgFrame3} />
+                      </div>
+                    </div>
+                    {isNavbarExpanded && (
+                      <span className="text-[14px] font-medium text-black whitespace-nowrap">Dark Mode</span>
+                    )}
+                  </div>
+
+                  {/* Settings */}
+                  <div 
+                    className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 rounded-lg ${
+                      isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
+                    }`}
+                    onClick={() => setIsSettingsOpen(true)}
+                  >
+                    <div className="w-[58px] h-[58px] bg-white border border-gray-200 rounded-[45px] flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:scale-105 hover:bg-gray-50">
+                      <div className="w-[30px] h-[30px]">
+                        <img alt="Settings" className="w-full h-full object-contain" src={imgSettings} />
+                      </div>
+                    </div>
+                    {isNavbarExpanded && (
+                      <span className="text-[14px] font-medium text-black whitespace-nowrap">Settings</span>
+                    )}
+                  </div>
+
+                  {/* Logout */}
+                  <div 
+                    className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 rounded-lg ${
+                      isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
+                    }`}
+                    onClick={logout}
+                  >
+                    <div className="w-[58px] h-[58px] bg-white border border-gray-200 rounded-[45px] flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:scale-105 hover:bg-gray-50">
+                      <div className="w-[30px] h-[30px]">
+                        <img alt="Logout" className="w-full h-full object-contain" src={imgLogout} />
+                      </div>
+                    </div>
+                    {isNavbarExpanded && (
+                      <span className="text-[14px] font-medium text-black whitespace-nowrap">Logout</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Notes Interface - Exact Figma Design */}
+              <div className="flex-1 bg-[#f9f4ed] flex flex-col">
+                {/* Top Header - Same as dashboard */}
+                <div className="flex items-center justify-end p-8 bg-white border-b border-gray-200">
+                  {/* Right side - Status indicators */}
+                  <div className="flex items-center gap-6">
+                    {/* Feeling Status */}
+                    <div className="bg-white border border-white rounded-[52px] px-8 py-3">
+                      <div className="flex items-center gap-16">
+                        <div className="bg-white rounded-[42px] px-8 py-2">
+                          <div className="text-center">
+                            <p className="text-[#ff7b00] text-xl font-medium">
+                              Feeling {recentReflections.length > 0 ? recentReflections[0].mood : currentMood}
+                            </p>
+                            <p className="text-[7px] text-gray-500">
+                              {todayMoodEntry ? "Based on today's check-in" : "Based on recent check-ins"}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Monitor Toggle */}
+                        <div
+                          className="bg-white rounded-[34px] px-6 py-1 cursor-pointer hover:bg-gray-50 transition-colors"
+                          onClick={toggleEmotionalMonitoring}
+                        >
+                          <div className="w-[30px] h-[30px] mb-1">
+                            <img alt="Monitor" className="w-full h-full object-contain" src={imgMonitor} />
+                          </div>
+                          <p className={`text-[7px] ${isEmotionalMonitoring ? "text-[#261af6]" : "text-gray-500"}`}>
+                            Monitor: {isEmotionalMonitoring ? "On" : "Off"}
+                          </p>
+                        </div>
+
+                        {/* Progress bars */}
+                        <div className="flex gap-1">
+                          {Array.from({ length: 25 }).map((_, i) => (
+                            <div key={i} className="bg-[rgba(109,125,205,0.3)] border border-[#6d7dcd] h-[22px] w-[5px] rounded-[8px]"></div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right side - User profile and notifications */}
+                    <div className="flex items-center gap-6">
+                      {/* Notifications */}
+                      <div className="relative">
+                        <NotificationBell
+                          onNotificationClick={(notification) => {
+                            if (notification.type === "friend_request") {
+                              window.location.href = '/friends';
+                            } else if (notification.type === "message") {
+                              window.location.href = '/friends';
+                            }
+                          }}
+                        />
+                      </div>
+
+                      {/* User Profile */}
+                      <div className="w-[80px] h-[80px] bg-white rounded-[45px] p-1.5 cursor-pointer hover:bg-gray-50 transition-colors">
+                        <div className="w-full h-full rounded-[45px] overflow-hidden">
+                          <img alt="User Profile" className="w-full h-full object-cover" src={imgRectangle87} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Notes Content - Exact Figma Layout */}
+                <div className="flex-1 p-8">
+                  {/* Page Title */}
+                  <h1 className="text-[32px] font-medium text-black mb-8">My Reflections</h1>
+                  
+                  {/* Search Bar - Exact Figma Design */}
+                  <div className="bg-white border border-[rgba(255,123,0,0.4)] rounded-[31px] px-5 py-2 w-[504px] mb-8">
+                    <div className="flex items-center justify-between">
+                      <p className="text-[20px] text-[rgba(0,0,0,0.5)]">Search your reflections</p>
+                      <div className="flex items-center gap-4">
+                        <div className="bg-[#f9f4ed] rounded-[17.5px] p-1 w-[35px] h-[35px] flex items-center justify-center">
+                          <div className="w-6 h-6">
+                            <img alt="Search" className="w-full h-full object-contain" src={img1} />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Reflections List - Exact Figma Design */}
+                  <div className="space-y-4">
+                    {recentReflections.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center h-96 text-center">
+                        <div className="w-24 h-24 bg-gradient-to-br from-[#ff7b00] to-[#ff9500] rounded-full flex items-center justify-center mb-6 shadow-xl">
+                          <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                          </svg>
+                        </div>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-2">No Reflections Yet</h2>
+                        <p className="text-gray-600 mb-6 max-w-md">
+                          Start your mood journey by checking in with your feelings. 
+                          Your reflections will appear here.
+                        </p>
+                        <button
+                          onClick={() => {
+                            setShowNotesInterface(false);
+                            setShowMoodModal(true);
+                          }}
+                          className="px-6 py-3 bg-gradient-to-r from-[#ff7b00] to-[#ff9500] text-white rounded-xl hover:from-[#e66a00] hover:to-[#ff7b00] transition-all duration-200 shadow-lg hover:shadow-xl"
+                        >
+                          Start Your First Entry
+                        </button>
+                      </div>
+                    ) : (
+                      recentReflections.map((reflection, index) => (
+                        <div key={index} className="bg-white border border-[#f9f4ed] rounded-[30px] p-5 w-[763px]">
+                          <div className="flex flex-col gap-4">
+                            {/* Mood Badge and Date */}
+                            <div className="flex gap-8 items-center">
+                              <div className={`border rounded-[26px] px-3 py-1 h-[26px] flex items-center justify-center ${
+                                reflection.mood === 'Calm' || reflection.mood === 'Happy' || reflection.mood === 'Excited' || reflection.mood === 'Grateful' || reflection.mood === 'Confident' || reflection.mood === 'Peaceful'
+                                  ? 'bg-[rgba(255,123,0,0.4)] border-[#ff7b00]'
+                                  : 'bg-[rgba(75,59,255,0.3)] border-[rgba(38,26,246,0.6)]'
+                              }`}>
+                                <p className={`text-[14px] font-normal ${
+                                  reflection.mood === 'Calm' || reflection.mood === 'Happy' || reflection.mood === 'Excited' || reflection.mood === 'Grateful' || reflection.mood === 'Confident' || reflection.mood === 'Peaceful'
+                                    ? 'text-[#ff7b00]'
+                                    : 'text-[#261af6]'
+                                }`}>
+                                  {reflection.mood}
+                                </p>
+                              </div>
+                              <div className="flex gap-5 text-[14px] text-[rgba(0,0,0,0.5)]">
+                                <p>{new Date(reflection.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                                <p>{new Date(reflection.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                              </div>
+                            </div>
+                            
+                            {/* Notes Text */}
+                            <p className="text-[16px] text-[rgba(9,3,0,0.35)] leading-normal">
+                              {reflection.notes || "No additional notes provided."}
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
               </div>
