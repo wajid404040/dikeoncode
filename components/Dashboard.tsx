@@ -960,7 +960,10 @@ export default function Dashboard() {
                       <div className="border-b border-[#090300] pb-1">
                         <div 
                           className="flex items-center gap-2 cursor-pointer hover:opacity-70 transition-opacity"
-                          onClick={() => window.location.href = '/checkin'}
+                          onClick={() => {
+                            setShowChatInterface(true);
+                            setActiveTab("checkin");
+                          }}
                         >
                           <div className="w-4 h-4">
                             <img alt="Chat" className="w-full h-full object-contain" src={imgGroup} />
