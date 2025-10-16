@@ -690,7 +690,7 @@ export default function Dashboard() {
           <div 
             className={`flex items-center gap-[13px] cursor-pointer transition-all duration-200 rounded-lg ${
               isNavbarExpanded ? 'px-4 py-2' : 'justify-center'
-            }`}
+            } ${showNotesInterface && activeTab === "notes" ? 'bg-[#ff7b00]' : ''}`}
             onClick={() => {
               setShowNotesInterface(true);
               setShowChatInterface(false);
@@ -704,11 +704,9 @@ export default function Dashboard() {
                 <img alt="Notes" className="w-full h-full object-contain" src={imgNotes} />
               </div>
             </div>
-            {isNavbarExpanded && (
-              <span className={`text-[14px] font-medium whitespace-nowrap ${
-                showNotesInterface && activeTab === "notes" ? 'text-white' : 'text-black'
-              }`}>Notes</span>
-            )}
+            <span className="text-[14px] font-medium text-black whitespace-nowrap">
+              Notes
+            </span>
           </div>
 
           {/* Friends */}
@@ -1704,7 +1702,7 @@ export default function Dashboard() {
                       </div>
                     </div>
                     {isNavbarExpanded && (
-                      <span className="text-[14px] font-medium text-white whitespace-nowrap">Notes</span>
+                      <span className="text-[14px] font-medium text-black whitespace-nowrap">Notes</span>
                     )}
                   </div>
 
